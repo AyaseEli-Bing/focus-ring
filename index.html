@@ -3,74 +3,310 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>focus ring · 专注计时器</title>
-  <meta name="description" content="一个安静的专注计时器：25 分钟专注、5 分钟短休，每四轮一次 15 分钟长休。零依赖，离线可用。">
-  <meta name="theme-color" content="#edf1f3">
+  <title>AyaseEli-Bing · 小工具集合</title>
+  <meta name="description" content="简单、好看的网页小工具：专注计时器 focus ring 与剪贴板历史管理器 clip shelf。">
+  <meta name="theme-color" content="#f1f4f5">
   <meta name="color-scheme" content="light">
-  <meta property="og:title" content="focus ring · 专注计时器">
-  <meta property="og:description" content="一个安静的专注计时器：25 分钟专注、5 分钟短休，每四轮一次 15 分钟长休。">
-  <meta property="og:type" content="website">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Martian+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Martian+Mono:wght@400;500;600&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f1f4f5;
+      --surface: #ffffff;
+      --ink: #17252f;
+      --ink-2: #526069;
+      --ink-3: #93a0a7;
+      --line: rgba(23, 37, 47, 0.10);
+      --line-strong: rgba(23, 37, 47, 0.18);
+      --accent: #b83a1c;
+      --accent-ink: #fff6f2;
+      --radius: 18px;
+      --shadow: 0 12px 32px rgba(23, 37, 47, 0.08);
+      --shadow-hover: 0 18px 48px rgba(23, 37, 47, 0.12);
+      --font-sans: "DM Sans", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
+      --font-mono: "Martian Mono", "SF Mono", "Menlo", monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--font-sans);
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    :focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+    }
+
+    /* 顶栏 */
+    .topbar {
+      border-bottom: 1px solid var(--line);
+      background: rgba(241, 244, 245, 0.92);
+      backdrop-filter: blur(8px);
+    }
+
+    .topbar-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 22px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand {
+      font-family: var(--font-mono);
+      font-size: 1.05rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+    }
+
+    .repo-link {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--ink-2);
+      border-bottom: 1px solid var(--line-strong);
+      padding-bottom: 1px;
+      transition: color 0.15s ease, border-color 0.15s ease;
+    }
+
+    .repo-link:hover {
+      color: var(--ink);
+      border-color: var(--ink);
+    }
+
+    /* 主体 */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 28px 64px;
+      position: relative;
+    }
+
+    .hero {
+      max-width: 720px;
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .hero h1 {
+      margin: 0 0 16px;
+      font-size: clamp(2.2rem, 6vw, 4rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+    }
+
+    .hero h1 span {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 0.35em;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+
+    .hero p {
+      margin: 0;
+      font-size: clamp(1rem, 2.2vw, 1.18rem);
+      color: var(--ink-2);
+      line-height: 1.6;
+    }
+
+    /* 卡片网格 */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      width: 100%;
+      max-width: 800px;
+    }
+
+    .card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 18px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 30px;
+      box-shadow: var(--shadow);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-hover);
+      border-color: var(--line-strong);
+    }
+
+    .card-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      font-size: 1.5rem;
+      background: var(--bg);
+      color: var(--accent);
+      border: 1px solid var(--line);
+    }
+
+    .card h2 {
+      margin: 0;
+      font-size: 1.35rem;
+      font-weight: 700;
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--ink-2);
+      line-height: 1.55;
+      font-size: 0.95rem;
+    }
+
+    .card-action {
+      margin-top: auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 22px;
+      border-radius: 10px;
+      background: var(--accent);
+      color: var(--accent-ink);
+      font-weight: 600;
+      font-size: 0.92rem;
+      transition: background 0.15s ease;
+    }
+
+    .card-action:hover {
+      background: #9c3117;
+    }
+
+    .card-action svg {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
+    }
+
+    /* 页脚 */
+    .footer {
+      border-top: 1px solid var(--line);
+      color: var(--ink-3);
+      font-size: 0.78rem;
+      text-align: center;
+      padding: 24px 28px;
+    }
+
+    .footer a {
+      color: var(--ink-2);
+      border-bottom: 1px solid var(--line-strong);
+      transition: color 0.15s ease, border-color 0.15s ease;
+    }
+
+    .footer a:hover {
+      color: var(--ink);
+      border-color: var(--ink);
+    }
+
+    @media (max-width: 560px) {
+      .topbar-inner {
+        padding: 16px 20px;
+      }
+
+      .main {
+        padding: 32px 20px 48px;
+      }
+
+      .cards {
+        grid-template-columns: 1fr;
+      }
+
+      .card {
+        padding: 24px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.001ms !important;
+        transition-duration: 0.001ms !important;
+      }
+    }
+  </style>
 </head>
 <body>
   <header class="topbar">
     <div class="topbar-inner">
-      <div class="brand">
-        <h1 class="wordmark">focus ring</h1>
-        <span class="tagline">一个安静的专注计时器</span>
-      </div>
+      <span class="brand">AyaseEli-Bing</span>
       <a class="repo-link" href="https://github.com/AyaseEli-Bing/focus-ring" target="_blank" rel="noreferrer">GitHub</a>
     </div>
   </header>
 
-  <main class="stage">
-    <div class="mode-switch" role="group" aria-label="选择模式">
-      <button type="button" class="mode" data-mode="focus" aria-pressed="true">专注</button>
-      <button type="button" class="mode" data-mode="short" aria-pressed="false">短休</button>
-      <button type="button" class="mode" data-mode="long" aria-pressed="false">长休</button>
-    </div>
+  <main class="main">
+    <section class="hero">
+      <h1><span>Tiny Tools</span>简单好用的网页小工具</h1>
+      <p>没有框架、没有依赖、打开就能用。一个安静的专注计时器，一个漂亮的剪贴板历史管理器。</p>
+    </section>
 
-    <div class="dial-wrap">
-      <svg class="dial" viewBox="0 0 480 480" aria-hidden="true" focusable="false">
-        <g id="ticks"></g>
-        <circle class="track" cx="240" cy="240" r="192"></circle>
-        <circle id="progress" class="progress" cx="240" cy="240" r="192" transform="rotate(-90 240 240)"></circle>
-        <circle id="marker" class="marker" cx="240" cy="48" r="4.5"></circle>
-      </svg>
-      <div class="face">
-        <p class="phase" id="phaseLabel">专注</p>
-        <p class="time" id="timeDisplay" role="timer">25:00</p>
-        <div class="rounds" id="rounds" role="group" aria-label="本轮进度：0 / 4">
-          <span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
-        </div>
-      </div>
-    </div>
+    <div class="cards">
+      <a class="card" href="focus-ring.html">
+        <div class="card-icon" aria-hidden="true">⏱</div>
+        <h2>focus ring</h2>
+        <p>安静的专注计时器：25 分钟专注、5 分钟短休、15 分钟长休。仪器式表盘，本地保存今日统计。</p>
+        <span class="card-action">
+          打开应用
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.5 2.5a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V3.707L2.854 13.146a.5.5 0 0 1-.708-.708L13.293 3H7a.5.5 0 0 1-.5-.5z"/></svg>
+        </span>
+      </a>
 
-    <div class="controls">
-      <button type="button" class="primary" id="toggleBtn">开始</button>
-      <button type="button" class="secondary" id="resetBtn">重置</button>
-      <button type="button" class="secondary" id="skipBtn">跳过</button>
+      <a class="card" href="clipboard.html">
+        <div class="card-icon" aria-hidden="true">📋</div>
+        <h2>clip shelf</h2>
+        <p>剪贴板历史管理器：自动识别链接、代码、颜色与邮件，支持搜索、置顶、剪贴板监听和移动端抽屉预览。</p>
+        <span class="card-action">
+          打开应用
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.5 2.5a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V3.707L2.854 13.146a.5.5 0 0 1-.708-.708L13.293 3H7a.5.5 0 0 1-.5-.5z"/></svg>
+        </span>
+      </a>
     </div>
-
-    <p class="status" id="status" role="status" aria-live="polite"></p>
-    <p class="today">今日已完成 <strong id="todayCount">0</strong> 轮</p>
   </main>
 
   <footer class="footer">
-    <div class="footer-inner">
-      <div class="hints">
-        <span><kbd>空格</kbd> 开始 / 暂停</span>
-        <span><kbd>R</kbd> 重置</span>
-        <span><kbd>S</kbd> 跳过</span>
-      </div>
-      <button type="button" class="sound" id="soundBtn" aria-pressed="true">提示音 开</button>
-    </div>
+    <p>© 2026 AyaseEli-Bing · <a href="https://github.com/AyaseEli-Bing/focus-ring" target="_blank" rel="noreferrer">GitHub 仓库</a></p>
   </footer>
-
-  <script src="app.js"></script>
 </body>
 </html>

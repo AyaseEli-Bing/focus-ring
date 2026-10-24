@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>focus ring · 专注计时器</title>
+  <meta name="description" content="一个安静的专注计时器：25 分钟专注、5 分钟短休，每四轮一次 15 分钟长休。零依赖，离线可用。">
+  <meta name="theme-color" content="#edf1f3">
+  <meta name="color-scheme" content="light">
+  <meta property="og:title" content="focus ring · 专注计时器">
+  <meta property="og:description" content="一个安静的专注计时器：25 分钟专注、5 分钟短休，每四轮一次 15 分钟长休。">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Martian+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <h1 class="wordmark">focus ring</h1>
+        <span class="tagline">一个安静的专注计时器</span>
+      </div>
+      <a class="repo-link" href="https://github.com/AyaseEli-Bing/focus-ring" target="_blank" rel="noreferrer">GitHub</a>
+    </div>
+  </header>
+
+  <main class="stage">
+    <div class="mode-switch" role="group" aria-label="选择模式">
+      <button type="button" class="mode" data-mode="focus" aria-pressed="true">专注</button>
+      <button type="button" class="mode" data-mode="short" aria-pressed="false">短休</button>
+      <button type="button" class="mode" data-mode="long" aria-pressed="false">长休</button>
+    </div>
+
+    <div class="dial-wrap">
+      <svg class="dial" viewBox="0 0 480 480" aria-hidden="true" focusable="false">
+        <g id="ticks"></g>
+        <circle class="track" cx="240" cy="240" r="192"></circle>
+        <circle id="progress" class="progress" cx="240" cy="240" r="192" transform="rotate(-90 240 240)"></circle>
+        <circle id="marker" class="marker" cx="240" cy="48" r="4.5"></circle>
+      </svg>
+      <div class="face">
+        <p class="phase" id="phaseLabel">专注</p>
+        <p class="time" id="timeDisplay" role="timer">25:00</p>
+        <div class="rounds" id="rounds" role="group" aria-label="本轮进度：0 / 4">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button type="button" class="primary" id="toggleBtn">开始</button>
+      <button type="button" class="secondary" id="resetBtn">重置</button>
+      <button type="button" class="secondary" id="skipBtn">跳过</button>
+    </div>
+
+    <p class="status" id="status" role="status" aria-live="polite"></p>
+    <p class="today">今日已完成 <strong id="todayCount">0</strong> 轮</p>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="hints">
+        <span><kbd>空格</kbd> 开始 / 暂停</span>
+        <span><kbd>R</kbd> 重置</span>
+        <span><kbd>S</kbd> 跳过</span>
+      </div>
+      <button type="button" class="sound" id="soundBtn" aria-pressed="true">提示音 开</button>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
