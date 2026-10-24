@@ -92,6 +92,13 @@ button {
   transition: color 0.15s ease, border-color 0.15s ease;
 }
 
+.topbar-links {
+  display: flex;
+  align-items: baseline;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
 .repo-link:hover {
   color: var(--ink);
   border-color: var(--ink);
