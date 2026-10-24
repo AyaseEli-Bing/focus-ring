@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>clip shelf · 剪贴板历史</title>
+  <meta name="description" content="一个简洁、漂亮的剪贴板历史管理器。监听、收藏、搜索并快速复制过去的剪贴内容。">
+  <meta name="theme-color" content="#f1f4f5">
+  <meta name="color-scheme" content="light">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Martian+Mono:wght@400;500;600&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="clipboard.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <h1 class="wordmark">clip shelf</h1>
+        <span class="tagline">剪贴板历史管理器</span>
+      </div>
+      <div class="topbar-actions">
+        <button type="button" class="monitor-toggle" id="monitorBtn" aria-pressed="false" title="开启后将监听系统剪贴板的新内容">
+          <span class="dot" id="monitorDot" aria-hidden="true"></span>
+          <span id="monitorLabel">监听剪贴板</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="app">
+    <aside class="sidebar" aria-label="分类">
+      <nav class="categories" id="categoryList"></nav>
+    </aside>
+
+    <section class="list-panel" aria-label="剪贴列表">
+      <div class="list-header">
+        <div class="search-wrap">
+          <svg class="search-icon" viewBox="0 0 20 20" aria-hidden="true"><path fill="currentColor" d="M8.5 3a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Zm-7 5.5a7.5 7.5 0 1 1 13.094 4.974l3.053 3.053a1 1 0 0 1-1.414 1.414l-3.053-3.053A7.5 7.5 0 0 1 1.5 8.5Z"/></svg>
+          <input type="search" id="searchInput" placeholder="搜索剪贴内容…" autocomplete="off" aria-label="搜索剪贴内容">
+          <kbd class="search-hint" id="searchHint">Ctrl K</kbd>
+        </div>
+        <button type="button" class="add-btn" id="addBtn" title="新建剪贴项">+</button>
+      </div>
+
+      <div class="filter-bar" id="filterBar"></div>
+
+      <div class="list-toolbar">
+        <span id="listMeta" class="list-meta">0 个项目</span>
+        <button type="button" class="ghost" id="clearBtn" disabled>清空历史</button>
+      </div>
+
+      <div class="clip-list" id="clipList" role="list"></div>
+    </section>
+
+    <section class="preview-panel" aria-label="预览" id="previewPanel">
+      <div class="preview-empty" id="previewEmpty">
+        <p>选择一个项目查看详情</p>
+        <p class="hint">或使用 Ctrl+V 粘贴新内容</p>
+      </div>
+      <div class="preview-body" id="previewBody" hidden>
+        <div class="preview-head">
+          <div class="preview-meta">
+            <span class="chip" id="previewType">text</span>
+            <span class="time" id="previewTime"></span>
+          </div>
+          <div class="preview-actions">
+            <button type="button" class="icon-btn" id="previewPinBtn" title="置顶 / 取消置顶" aria-label="置顶">Pin</button>
+            <button type="button" class="icon-btn" id="previewCopyBtn" title="复制">Copy</button>
+            <button type="button" class="icon-btn danger" id="previewDelBtn" title="删除">Del</button>
+          </div>
+        </div>
+        <div class="preview-content" id="previewContent"></div>
+      </div>
+    </section>
+  </main>
+
+  <dialog class="drawer" id="previewDrawer" aria-label="预览">
+    <div class="drawer-handle"></div>
+    <div class="drawer-content" id="drawerContent">
+      <div class="drawer-head">
+        <span class="chip" id="drawerType">text</span>
+        <button type="button" class="icon-btn" id="drawerClose" aria-label="关闭">关闭</button>
+      </div>
+      <div class="drawer-body" id="drawerBody"></div>
+      <div class="drawer-actions">
+        <button type="button" class="secondary" id="drawerPin">置顶</button>
+        <button type="button" class="primary" id="drawerCopy">复制</button>
+        <button type="button" class="secondary danger" id="drawerDel">删除</button>
+      </div>
+    </div>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <dialog class="modal" id="addModal" aria-labelledby="addModalTitle">
+    <form method="dialog" class="modal-form">
+      <h2 id="addModalTitle">添加剪贴</h2>
+      <textarea id="addTextarea" rows="6" placeholder="在此粘贴或输入内容…" required></textarea>
+      <div class="modal-actions">
+        <button type="button" class="secondary" id="cancelAdd">取消</button>
+        <button type="submit" class="primary" id="confirmAdd">添加</button>
+      </div>
+    </form>
+  </dialog>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="hints">
+        <span><kbd>Ctrl</kbd> <kbd>K</kbd> 搜索</span>
+        <span><kbd>↑</kbd> <kbd>↓</kbd> 选择</span>
+        <span><kbd>↵</kbd> 复制</span>
+        <span><kbd>Del</kbd> 删除</span>
+        <span><kbd>Esc</kbd> 取消</span>
+      </div>
+      <span class="monitor-status" id="monitorStatus">监听已关闭</span>
+    </div>
+  </footer>
+
+  <script src="clipboard.js"></script>
+</body>
+</html>
