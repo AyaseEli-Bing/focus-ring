@@ -42,6 +42,8 @@
 
 ## clip shelf
 
+![clip shelf 界面](assets/preview-clipboard.png)
+
 ### 功能
 
 - **自动识别类型**：文本、链接、代码、邮件、颜色、图片，按内容形态归类。
